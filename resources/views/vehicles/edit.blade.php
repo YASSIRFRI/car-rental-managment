@@ -1,32 +1,70 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Vehicle')
+
+@push('page-css')
+    <style>
+        #vehicle_model_list {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #vehicle_model_list li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #vehicle_model_list li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+@endpush
+
 @section('content')
-    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">Edit Vehicle</h2>
-        <form method="POST" action="{{ route('vehicles.update', $vehicle) }}">
+    <div class="col-sm-12 mb-8">
+        <h3 class="page-title text-gray-100">Edit Vehicle</h3>
+        <ul class="breadcrumb text-gray-100">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-blue-400">Dashboard</a></li>
+            <li class="breadcrumb-item active text-gray-400">Edit Vehicle</li>
+        </ul>
+    </div>
+
+    <div class="bg-gray-800 shadow-md rounded-lg overflow-hidden p-6">
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Whoops!</strong> There were some problems with your input.<br><br>
+                <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('vehicles.update', $vehicle->id) }}" method="POST">
             @csrf
             @method('PUT')
+            <input type="hidden" name="model_id" id="model_id" value="{{ $vehicle->model_id }}">
             <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                <input id="name" name="name" type="text" value="{{ $vehicle->name }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <label for="model_name" class="block text-gray-400">Vehicle Model</label>
+                <input type="text" name="model_name" id="model_name" value="{{ $vehicle->model->name }}" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" autocomplete="off" required>
+                <ul id="vehicle_model_list" class="hidden"></ul>
             </div>
             <div class="mb-4">
-                <label for="model" class="block text-sm font-medium text-gray-700">Model</label>
-                <input id="model" name="model" type="text" value="{{ $vehicle->model }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <label for="plate" class="block text-gray-400">Plate</label>
+                <input type="text" name="plate" id="plate" value="{{ $vehicle->plate }}" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
             </div>
             <div class="mb-4">
-                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                <input id="type" name="type" type="text" value="{{ $vehicle->type }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-            </div>
-            <div class="mb-4">
-                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                <input id="status" name="status" type="text" value="{{ $vehicle->status }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-            </div>
-            <div class="mb-4">
-                <label for="availability" class="block text-sm font-medium text-gray-700">Availability</label>
-                <select id="availability" name="availability" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                    <option value="1" {{ $vehicle->availability ? 'selected' : '' }}>Available</option>
-                    <option value="0" {{ !$vehicle->availability ? 'selected' : '' }}>Not Available</option>
+                <label for="mechanical_state_id" class="block text-gray-400">Mechanical State</label>
+                <select name="mechanical_state_id" id="mechanical_state_id" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300">
+                    @foreach ($mechanicalStates as $state)
+                        <option value="{{ $state->id }}" @if($vehicle->mechanical_state_id == $state->id) selected @endif>{{ $state->last_oil_change }} - {{ $state->mileage }} km</option>
+                    @endforeach
                 </select>
             </div>
             <div>
@@ -37,3 +75,44 @@
         </form>
     </div>
 @endsection
+
+@push('page-js')
+<script>
+    $(document).ready(function () {
+        const modelInput = $('#model_name');
+        const modelList = $('#vehicle_model_list');
+
+        modelInput.on('input', function () {
+            const query = modelInput.val();
+            if (query.length > 0) {
+                $.ajax({
+                    url: `/vehicle-models/search`,
+                    method: 'GET',
+                    data: { query: query },
+                    success: function (models) {
+                        modelList.empty();
+                        models.forEach(model => {
+                            modelList.append(`<li data-model-id="${model.id}">${model.name} - ${model.constructor}</li>`);
+                        });
+                        modelList.removeClass('hidden');
+                    }
+                });
+            } else {
+                modelList.addClass('hidden');
+            }
+        });
+
+        modelList.on('click', 'li', function () {
+            modelInput.val($(this).text());
+            $('#model_id').val($(this).data('model-id'));
+            modelList.addClass('hidden');
+        });
+
+        $(document).on('click', function (e) {
+            if (!modelList.is(e.target) && modelList.has(e.target).length === 0 && !modelInput.is(e.target)) {
+                modelList.addClass('hidden');
+            }
+        });
+    });
+</script>
+@endpush

@@ -1,32 +1,80 @@
 @extends('layouts.app')
 
+@section('title', 'Add Vehicle')
+
+@push('page-css')
+    <style>
+        #vehicle_model_list {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #vehicle_model_list li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #vehicle_model_list li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+@endpush
+
 @section('content')
-    <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">Add New Vehicle</h2>
-        <form method="POST" action="{{ route('vehicles.store') }}">
+    <div class="col-sm-12 mb-8">
+        <h3 class="page-title text-gray-100">Add New Vehicle</h3>
+        <ul class="breadcrumb text-gray-100">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-blue-400">Dashboard</a></li>
+            <li class="breadcrumb-item active text-gray-400">Add Vehicle</li>
+        </ul>
+    </div>
+    <div class="bg-gray-800 shadow-md rounded-lg overflow-hidden p-6">
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Whoops!</strong> There were some problems with your input.<br><br>
+                <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <form action="{{ route('vehicles.store') }}" method="POST" id="vehicleForm">
             @csrf
             <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                <input id="name" name="name" type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <label for="model_name" class="block text-gray-400">Vehicle Model</label>
+                <input type="text" name="model_name" id="model_name" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" autocomplete="off" required>
+                <input type="hidden" name="model_id" id="model_id">
+                <ul id="vehicle_model_list" class="hidden"></ul>
             </div>
             <div class="mb-4">
-                <label for="model" class="block text-sm font-medium text-gray-700">Model</label>
-                <input id="model" name="model" type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <label for="plate" class="block text-gray-400">Plate</label>
+                <input type="text" name="plate" id="plate" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
             </div>
             <div class="mb-4">
-                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                <input id="type" name="type" type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <label for="plate" class="block text-gray-400">Price</label>
+                <input type="text" name="price" id="price" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
             </div>
             <div class="mb-4">
-                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                <input id="status" name="status" type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <label for="plate" class="block text-gray-400">Vignette</label>
+                <input type="text" name="tax_value" id="price" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
             </div>
             <div class="mb-4">
-                <label for="availability" class="block text-sm font-medium text-gray-700">Availability</label>
-                <select id="availability" name="availability" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                    <option value="1">Available</option>
-                    <option value="0">Not Available</option>
-                </select>
+                <label for="mileage" class="block text-gray-400">Kilometrage</label>
+                <input type="text" name="mileage" id="mileage" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
+            </div>
+            <div class="mb-4">
+                <label for="last_oil_change" class="block text-gray-400">Dernier Vidange</label>
+                <input type="date" name="last_oil_change" id="last_oil_change" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
+            </div>
+            <div class="mb-4">
+                <label for="tax" class="block text-gray-400">Dernier payment de vignette</label>
+                <input type="date" name="last_tax_pay" id="tax" class="mt-1 block w-full px-3 py-2 border border-gray-600 bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-300" required>
             </div>
             <div>
                 <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -34,5 +82,58 @@
                 </button>
             </div>
         </form>
+
     </div>
 @endsection
+
+@push('page-js')
+<script>
+  $(document).ready(function () {
+    const modelInput = $('#model_name');
+    const modelList = $('#vehicle_model_list');
+    const modelIdInput = $('#model_id');
+
+    modelInput.on('input', function () {
+        const query = modelInput.val();
+        if (query.length > 0) {
+            $.ajax({
+                url: `/vehicle-models/search`,
+                method: 'GET',
+                data: { query: query },
+                success: function (models) {
+                    modelList.empty();
+                    models.forEach(model => {
+                        modelList.append(`<li data-model-id="${model.id}">${model.name} - ${model.constructor}</li>`);
+                    });
+                    modelList.removeClass('hidden');
+                }
+            });
+        } else {
+            modelList.addClass('hidden');
+        }
+    });
+
+    modelList.on('click', 'li', function () {
+        modelInput.val($(this).text());
+        modelIdInput.val($(this).data('model-id'));
+        console.log("Selected Model ID:", $(this).data('model-id')); // Log the selected model ID
+        modelList.addClass('hidden');
+    });
+
+    $('#vehicleForm').on('submit', function (e) {
+        const modelId = modelIdInput.val();
+        console.log("Submitting Model ID:", modelId); // Log the model ID before submitting the form
+        if (!modelId) {
+            alert('Please select a vehicle model.');
+            e.preventDefault();
+        }
+    });
+
+    $(document).on('click', function (e) {
+        if (!modelList.is(e.target) && modelList.has(e.target).length === 0 && !modelInput.is(e.target)) {
+            modelList.addClass('hidden');
+        }
+    });
+});
+</script>
+@endpush

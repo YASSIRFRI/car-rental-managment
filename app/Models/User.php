@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -21,7 +22,10 @@ class User extends Authenticatable
         'email',
         'password',
         'google_id',
-        'role'
+        'role',
+        'city',      
+        'zip_code',  
+        'address',  
     ];
 
     /**
@@ -42,4 +46,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Relationship to the Vehicle model.
+     */
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'agency_id');
+    }
 }

@@ -24,9 +24,11 @@ class DashboardController extends Controller
                             ->pluck('total', 'month');
 
         // Calculate fleet rotation rate
-        $availableVehicles = $vehicles->where('availability', 1)->count();
-        $rentedVehicles = $vehicles->where('availability', 0)->count();
-        $unavailableVehicles = $vehicles->count() - $availableVehicles - $rentedVehicles;
+        $availableVehicles = $vehicles->where('agency_id', $id)->where('availability', 1);
+        $availableVehiclescount = $availableVehicles->count();
+        $rentedVehicles = $vehicles->where('availability', 0);
+        $rentedVehiclescount= $rentedVehicles->count();
+        $unavailableVehicles = $vehicles->count() - $availableVehiclescount - $rentedVehiclescount;
 
         // Cars available today
         $today = Carbon::today();
@@ -36,8 +38,10 @@ class DashboardController extends Controller
 
         // Cars with mechanical issues
         $carsWithIssues = Vehicle::whereHas('mechanicalState', function($query) {
-            $query->where('mileage', '>', 100000) // Example condition for mechanical issues
-                  ->orWhere('last_oil_change', '<', Carbon::now()->subMonths(6)); // Example condition
+            $query->where('mileage', '>', 100000)
+                  ->orWhere('last_oil_change', '<', Carbon::now()->subMonths(6))
+                  ->orWhere('technical_inspection', '<', Carbon::now()->subMonths(12))
+                  ->orWhere('technical_inspection_comment', '!=', null);
         })->get();
 
         return view('dashboard', compact('vehicles', 'rentals', 'availableVehicles', 'rentedVehicles', 'unavailableVehicles', 'payments', 'availableToday', 'carsWithIssues'));

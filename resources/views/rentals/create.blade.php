@@ -46,15 +46,19 @@
             border-color: #7e3af2;
             background-color: #ffffff;
         }
+        
+        .hidden {
+            display: none;
+        }
     </style>
 @endpush
 
 @section('content')
 <div class="col-sm-12 mb-8">
-    <h3 class="page-title text-gray-100">Ajouter une Nouvelle Location</h3>
+    <h3 class="page-title">Ajouter une Nouvelle Location</h3>
 </div>
 
-<div class="bg-gray-200 shadow-md w-1/2 mx-auto overflow-hidden p-6">
+<div class="bg-gray-200 shadow-md w-2/3 mx-auto overflow-hidden rounded-lg p-6">
     @if ($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <strong class="font-bold">Whoops!</strong> Il y a eu des problèmes avec votre saisie.<br><br>
@@ -74,10 +78,39 @@
             <input type="hidden" name="vehicle_id" id="vehicle_id">
             <ul id="vehicle_list" class="hidden"></ul>
         </div>
-        <div class="mb-4 relative">
-            <label for="client_name" class="block text-gray-800">Nom du Client</label>
-            <input type="text" name="client_name" id="client_name" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800" autocomplete="off" required>
-            <ul id="client_list" class="hidden"></ul>
+        <div class="mb-4 relative flex align-center justify-between w-full">
+            <div >
+                <label for="client_name" class="block text-gray-800">Nom du Client</label>
+                <input type="text" name="client_name" id="client_name" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800" autocomplete="off" required>
+                <ul id="client_list" class="hidden"></ul>
+            </div>
+            <button type="button" id="new-client-button" class="mt-2 mb-2 bg-gray-800 text-white px-3 rounded"><i class="fas fa-plus mr-2"></i>
+            <i class="fas fa-user"></i></button>
+        </div>
+        <div id="new-client-form" class="hidden">
+            <div class="mb-4">
+                <label for="client_type" class="block text-gray-800">Type de Client</label>
+                <select name="client_type" id="client_type" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+                    <option value="personne_physique">Personne Physique</option>
+                    <option value="personne_morale">Personne Morale</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="client_cin" class="block text-gray-800">CIN</label>
+                <input type="text" name="client_cin" id="client_cin" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+            </div>
+            <div class="mb-4">
+                <label for="client_ice" class="block text-gray-800">ICE</label>
+                <input type="text" name="client_ice" id="client_ice" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+            </div>
+            <div class="mb-4">
+                <label for="client_address" class="block text-gray-800">Adresse</label>
+                <input type="text" name="client_address" id="client_address" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+            </div>
+            <div class="mb-4">
+                <label for="client_city" class="block text-gray-800">Ville</label>
+                <input type="text" name="client_city" id="client_city" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+            </div>
         </div>
         <div class="mb-4">
             <label for="start_date" class="block text-gray-800">Date de Début</label>
@@ -100,15 +133,15 @@
             <input type="text" name="amount" id="total" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800" readonly>
         </div>
         <div class="mb-4">
-            <label for="total" class="block text-gray-800">Date de payment</label>
-            <input type="date" name="payment_date" id="total" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+            <label for="payment_date" class="block text-gray-800">Date de payment</label>
+            <input type="date" name="payment_date" id="payment_date" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
         </div>
         <div class="mb-4">
-            <label for="total" class="block text-gray-800">Methode de payment</label>
-            <input type="text" name="payment_method" id="total" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
+            <label for="payment_method" class="block text-gray-800">Methode de payment</label>
+            <input type="text" name="payment_method" id="payment_method" class="form-input mt-1 block w-full px-3 py-2 border bg-gray-300 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-800">
         </div>
-        <div>
-            <button type="submit" class="w-full py-2 px-4 border border-transparent shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <div class="flex flex-col items-center">
+            <button type="submit" class="w-1/2 py-2 px-4 border rounded-lg border-transparent shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Ajouter la Location
             </button>
         </div>
@@ -129,6 +162,12 @@
         const nombreDeJourInput = $('#nombre_jour');
         const prixParJourInput = $('#prix_par_jour');
         const totalInput = $('#total');
+        const newClientButton = $('#new-client-button');
+        const newClientForm = $('#new-client-form');
+
+        newClientButton.on('click', function() {
+            newClientForm.toggleClass('hidden');
+        });
 
         clientInput.on('input', function () {
             const query = clientInput.val();
